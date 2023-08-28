@@ -1,0 +1,49 @@
+# initialize the npm node project using command
+npm init
+
+# first istall the express 
+npm i express
+
+# install nodemon as dev dependency 
+npm i -D nodemon
+
+# add start command in script of package.json
+"start": "node server.js"
+
+# and for development use add this 
+"dev": "nodemon server.js"
+
+# for run project in local development
+npm run dev
+
+# then follow server.js 
+
+# install a async express handler
+npm i express-async-handler
+
+# then go to contactController.js
+
+# intall vs code plugin for mongo dbs
+connect with connection string
+then get a drive string to go to database and paste it in env file
+create a config folder  
+crete all schma in that folder and create dbConnection.js
+
+# install mongoose  
+npm i mongoose
+
+# go to dbConnection.js
+
+# create a database schema in models folder
+
+
+# part 2 - Authentication of users using token 
+- sign in and sign up module 
+- in server.js add users route
+- cretae a controller for same router methods
+- cretae schema model for same
+- intall a bcrypt library for password hashing 
+
+# user JWT - json web token to make user token
+npm i jsonwebtoken
+- define a unique access token in the env file  
