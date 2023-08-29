@@ -47,3 +47,7 @@ npm i mongoose
 # user JWT - json web token to make user token
 npm i jsonwebtoken
 - define a unique access token in the env file  
+
+.env file
+CONNECTION_STRING = "mongodb://localhost:27017/test"
+ACCESS_TOKEN_SECRET = "virajsamani"
