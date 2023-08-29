@@ -6,6 +6,7 @@ const {
   putContact,
   deleteContact,
 } = require("../controllers/contactController");
+const validateToken = require("../middleware/validateTokenHandler");
 
 // take router from express
 const router = express.Router();
@@ -20,6 +21,8 @@ const router = express.Router();
 // router.route("/:id").put(putContact);
 
 // router.route("/:id").delete(deleteContact);
+
+router.use(validateToken);
 
 // optimized way to write it if routes was same
 router.route("/").get(getAllContacts).post(postContact);
