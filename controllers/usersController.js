@@ -13,8 +13,15 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("userName, email and password Fields are required");
   }
-  const userAvailable = await User.findOne({ email });
-  if (userAvailable) {
+  const userAvailableEmail = await User.findOne({ email });
+  const userAvailableName = await User.findOne({ username });
+
+  if (userAvailableName) {
+    res.status(400);
+    throw new Error("UserName Already Registered.");
+  }
+
+  if (userAvailableEmail) {
     res.status(400);
     throw new Error("User Already Registered.");
   }
@@ -65,17 +72,14 @@ const loginUser = asyncHandler(async (req, res) => {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "10m",
+        expiresIn: "59m",
       }
     );
-    res.status(200).json({ accessToken });
+    return res.status(200).json({ accessToken });
   } else {
     res.status(401);
     throw new Error("Username or Passwrod is not valid.");
   }
-  res.json({
-    message: "login success !!",
-  });
 });
 
 // @desc current user

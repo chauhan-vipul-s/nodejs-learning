@@ -2,6 +2,7 @@ const express = require("express");
 const { errorHandler } = require("./middleware/errorHandler");
 const connectDb = require("./config/dbConnection");
 const dotenv = require("dotenv").config();
+var bodyParser = require("body-parser");
 
 // connect a database
 connectDb();
@@ -28,7 +29,7 @@ const port = process.env.PORT || "5000";
 // });
 
 // need to add a middleware for the read a body
-app.use(express.json());
+app.use(bodyParser.json());
 
 // after create this create a rountes folder
 // which used to handle a multiple apis
@@ -36,12 +37,21 @@ app.use(express.json());
 // now moving a previous api call to the contactroute.js
 app.use("/api/contacts/", require("./routes/contactRoute"));
 
-// add userroute 
-// then create route file 
+// add userroute
+// then create route file
 app.use("/api/users/", require("./routes/usersRoute"));
 
+// comedian route
+app.use("/api/comedian/", require("./routes/comedianRoute"));
+
+// video route
+app.use("/api/videos/", require("./routes/videoRoute"));
+
+// video route
+app.use("/api/posts/", require("./routes/postRoute"));
+
 // use the error middleware
-app.use(errorHandler)
+app.use(errorHandler);
 
 // it was used to initialize the app with port number
 // app.listen(port number, callback function)
