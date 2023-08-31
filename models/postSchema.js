@@ -20,6 +20,10 @@ const postSchema = mongoose.Schema(
     showOnDate: {
       type: Date,
     },
+    rating: {
+      type: Number,
+      default: 0,
+    },
     uploader: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

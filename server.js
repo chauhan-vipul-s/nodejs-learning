@@ -47,8 +47,11 @@ app.use("/api/comedian/", require("./routes/comedianRoute"));
 // video route
 app.use("/api/videos/", require("./routes/videoRoute"));
 
-// video route
+// post route
 app.use("/api/posts/", require("./routes/postRoute"));
+
+// joke route
+app.use("/api/jokes/", require("./routes/jokesRoute"));
 
 // use the error middleware
 app.use(errorHandler);

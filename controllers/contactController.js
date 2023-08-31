@@ -31,7 +31,6 @@ const postContact = asyncHandler(async (req, res) => {
 
   // Error handling
   const { name, email, phone } = req.body;
-  // console.log(name, email, phone);
   if (!name || !email || !phone) {
     res.status(400);
     throw new Error("All fields are mandatory!!");
@@ -97,7 +96,7 @@ const deleteContact = asyncHandler(async (req, res) => {
 
   if (contact.user_id.toString() !== req.user.id) {
     res.status(403);
-    throw new Error("User don't have permissio to update other user contacts.");
+    throw new Error("User don't have permission to update other user contacts.");
   }
 
   await Contacts.deleteOne({ _id: req.params.id });

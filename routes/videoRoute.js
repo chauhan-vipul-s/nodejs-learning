@@ -1,14 +1,12 @@
 const express = require("express");
 const validateToken = require("../middleware/validateTokenHandler");
+const { getVideo, postVideo } = require("../controllers/videoController");
 
 const router = express.Router();
 
 router.use(validateToken);
 
-router
-  .route("/")
-  .get((req, res) => res.send("get a video of that user"))
-  .post((req, res) => res.send("upload a video of that user"));
+router.route("/").get(getVideo).post(postVideo);
 
 router
   .route("/:name")

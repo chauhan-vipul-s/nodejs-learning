@@ -16,6 +16,10 @@ const userSchema = mongoose.Schema(
       required: [true, "Please add the user name"],
       unique: [true, "User Name Must be Unique."],
     },
+    nickName: {
+      type: String,
+      default: "",
+    },
     profilePicture: {
       type: String,
       default: "",

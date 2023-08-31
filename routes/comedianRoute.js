@@ -1,13 +1,14 @@
 const express = require("express");
 const validateToken = require("../middleware/validateTokenHandler");
+const {
+  udpateComedian,
+  getComedianInfo,
+} = require("../controllers/comedianController");
 
 const router = express.Router();
 
 router.use(validateToken);
 
-router
-  .route("/:id")
-  .patch((req, res) => res.send("update a user - " + req.params.id))
-  .get((req, res) => res.send("get a user - " + req.params.id));;
+router.route("/").patch(udpateComedian).get(getComedianInfo);
 
 module.exports = router;

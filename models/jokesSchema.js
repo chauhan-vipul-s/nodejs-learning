@@ -10,6 +10,10 @@ const jokeSchema = mongoose.Schema(
       type: Array,
       default: [],
     },
+    rating: {
+      type: Number,
+      default: 0,
+    },
     uploader: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

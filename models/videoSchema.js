@@ -13,6 +13,10 @@ const videoSchema = mongoose.Schema(
       type: String,
       required: [true, "Something went wrong."],
     },
+    rating: {
+      type: Number,
+      default: 0,
+    },
     tags: {
       type: Array,
       default: [],
