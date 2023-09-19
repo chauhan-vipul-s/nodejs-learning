@@ -22,7 +22,16 @@ const udpateComedian = asyncHandler(async (req, res) => {
 // @access private
 const getComedianInfo = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.user.email });
-  res.status(200).json(user);
+  const userData = {
+    email: user.email,
+    nickName: user.nickName,
+    profilePicture: user.profilePicture,
+    username: user.username,
+    createdAt: user.createdAt,
+    verified: user.verified,
+    _id: user._id,
+  };
+  res.status(200).json(userData);
 });
 
 module.exports = {
