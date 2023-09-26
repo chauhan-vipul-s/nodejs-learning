@@ -60,6 +60,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("userName, email and password Fields are required");
   }
   const user = await User.findOne({ email });
+  console.log(user, 'user')
   if (user && (await bcrypt.compare(password, user.password))) {
     // jwt.sign(payload,uniquekey,expire time)
     const accessToken = jwt.sign(

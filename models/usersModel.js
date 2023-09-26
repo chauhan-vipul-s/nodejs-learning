@@ -32,6 +32,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    followers: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

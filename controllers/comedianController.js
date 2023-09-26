@@ -29,6 +29,7 @@ const getComedianInfo = asyncHandler(async (req, res) => {
     username: user.username,
     createdAt: user.createdAt,
     verified: user.verified,
+    followers: user.followers || 0,
     _id: user._id,
   };
   res.status(200).json(userData);
