@@ -36,6 +36,22 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    tagline: {
+      type: String,
+      default: "",
+    },
+    about: {
+      type: String,
+      default: "",
+    },
+    achivements: {
+      type: Array,
+      default: [],
+    },
+    why: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
