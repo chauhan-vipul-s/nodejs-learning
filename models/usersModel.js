@@ -44,10 +44,12 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "",
     },
-    achivements: {
-      type: Array,
-      default: [],
-    },
+    achievements: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Achievement",
+      },
+    ],
     why: {
       type: String,
       default: "",

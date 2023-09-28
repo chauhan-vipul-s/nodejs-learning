@@ -57,6 +57,9 @@ app.use("/api/posts/", require("./routes/postRoute"));
 // joke route
 app.use("/api/jokes/", require("./routes/jokesRoute"));
 
+// joke route
+app.use("/api/achievement/", require("./routes/achievementRoute"));
+
 // use the error middleware
 app.use(errorHandler);
 

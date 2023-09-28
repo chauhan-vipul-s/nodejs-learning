@@ -21,25 +21,7 @@ const udpateComedian = asyncHandler(async (req, res) => {
 // @route GET /api/comedian
 // @access private
 const getComedianInfo = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ email: req.user.email });
-  const userData = {
-    email: user.email,
-    nickName: user.nickName,
-    profilePicture: user.profilePicture,
-    username: user.username,
-    createdAt: user.createdAt,
-    verified: user.verified,
-    followers: user.followers || 0,
-    _id: user._id,
-  };
-  res.status(200).json(userData);
-});
-
-// @desc get user/comedian/:username information
-// @route GET /api/comedian/:username
-// @access private
-const getComedianInfoByUserName = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ username: req.params.username });
+  const user = await User.findOne({ email: req.user.email }).populate('achievements');
   const userData = {
     email: user.email,
     nickName: user.nickName,
@@ -50,7 +32,29 @@ const getComedianInfoByUserName = asyncHandler(async (req, res) => {
     followers: user.followers || 0,
     tagline: user.tagline,
     about: user.about,
-    achivements: user.achivements,
+    achievements: user.achievements,
+    why: user.why,
+    _id: user._id,
+  };
+  res.status(200).json(userData);
+});
+
+// @desc get user/comedian/:username information
+// @route GET /api/comedian/:username
+// @access private
+const getComedianInfoByUserName = asyncHandler(async (req, res) => {
+  const user = await User.findOne({ username: req.params.username }).populate('achievements');
+  const userData = {
+    email: user.email,
+    nickName: user.nickName,
+    profilePicture: user.profilePicture,
+    username: user.username,
+    createdAt: user.createdAt,
+    verified: user.verified,
+    followers: user.followers || 0,
+    tagline: user.tagline,
+    about: user.about,
+    achievements: user.achievements,
     why: user.why,
     _id: user._id,
   };
