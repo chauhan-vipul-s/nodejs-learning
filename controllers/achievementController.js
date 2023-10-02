@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
 
-const User = require("../models/usersModel");
 const Achivement = require("../models/achievementModel");
 
 // @desc get achievement information by id

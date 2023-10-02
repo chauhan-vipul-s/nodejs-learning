@@ -57,8 +57,14 @@ app.use("/api/posts/", require("./routes/postRoute"));
 // joke route
 app.use("/api/jokes/", require("./routes/jokesRoute"));
 
-// joke route
+// achivements route
 app.use("/api/achievement/", require("./routes/achievementRoute"));
+
+// feed route
+app.use("/api/feed/", require("./routes/feedRoute"));
+
+// authenticated feed route
+app.use("/api/feed/user/", require("./routes/authFeedRoute"));
 
 // use the error middleware
 app.use(errorHandler);

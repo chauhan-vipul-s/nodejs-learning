@@ -21,6 +21,10 @@ const videoSchema = mongoose.Schema(
       type: Array,
       default: [],
     },
+    thumbnail: {
+      type: String,
+      default: "",
+    },
     uploader: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
