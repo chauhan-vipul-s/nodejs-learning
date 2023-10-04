@@ -6,7 +6,8 @@ const Posts = require("../models/postSchema");
 // @route GET /api/posts/
 // @access private
 const getPost = asyncHandler(async (req, res) => {
-  const posts = (await Posts.find({ uploader: req.user.id })) || [];
+  const posts =
+    (await Posts.find({ uploader: req.user.id }).sort({ createdAt: -1 })) || [];
   res.status(200).json(posts);
 });
 

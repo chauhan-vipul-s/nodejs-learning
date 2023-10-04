@@ -1,6 +1,6 @@
 const express = require("express");
 const validateToken = require("../middleware/validateTokenHandler");
-const { getVideo, postVideo } = require("../controllers/videoController");
+const { getVideo, postVideo, getSingleVideo } = require("../controllers/videoController");
 
 const router = express.Router();
 
@@ -8,8 +8,10 @@ router.use(validateToken);
 
 router.route("/").get(getVideo).post(postVideo);
 
+router.route("/:id").get(getSingleVideo);
+
 router
-  .route("/:name")
+  .route("/user/:name")
   .get((req, res) =>
     res.send("get a video of perticular profile viewing user" + req.params.name)
   );
