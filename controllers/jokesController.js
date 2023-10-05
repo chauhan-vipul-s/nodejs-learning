@@ -6,7 +6,8 @@ const Jokes = require("../models/jokesSchema");
 // @route GET /api/jokes/
 // @access private
 const getJokes = asyncHandler(async (req, res) => {
-  const jokes = (await Jokes.find({ uploader: req.user.id })) || [];
+  const jokes =
+    (await Jokes.find({ uploader: req.user.id }).sort({ createdAt: -1 })) || [];
   res.status(200).json(jokes);
 });
 

@@ -66,6 +66,9 @@ app.use("/api/feed/", require("./routes/feedRoute"));
 // authenticated feed route
 app.use("/api/feed/user/", require("./routes/authFeedRoute"));
 
+// search route
+app.use("/api/search/", require("./routes/searchRoute"));
+
 // use the error middleware
 app.use(errorHandler);
 
