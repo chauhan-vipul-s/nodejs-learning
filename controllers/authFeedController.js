@@ -1,0 +1,86 @@
+const asyncHandler = require("express-async-handler");
+
+const Videos = require("../models/videoSchema");
+const Post = require("../models/postSchema");
+const Jokes = require("../models/jokesSchema");
+
+// @desc get feed video for private
+// @route GET /api/feed/user/videos
+// @access private
+const getFeedVideo = asyncHandler(async (req, res) => {
+  const latestVideos = await Videos.find({})
+    .sort({ createdAt: -1 })
+    .limit(4)
+    .populate("uploader")
+    .exec();
+
+  const verifiedVideos = latestVideos.filter(
+    (video) => video.uploader.verified
+  );
+
+  const videos = verifiedVideos.map((video) => ({
+    _id: video._id,
+    title: video.title,
+    rating: video.rating,
+    nickName: video.uploader.nickName,
+    username: video.uploader.username,
+    profilePicture: video.uploader.profilePicture,
+    createdAt: video.createdAt,
+    thumbnail: video.thumbnail,
+  }));
+
+  return res.status(200).json({ data: videos });
+});
+
+// @desc get feed post for private
+// @route GET /api/feed/user/posts
+// @access private
+const getFeedPosts = asyncHandler(async (req, res) => {
+  const latestPost = await Post.find({})
+    .sort({ createdAt: -1 })
+    .limit(4)
+    .populate("uploader")
+    .exec();
+
+  const verifiedPost = latestPost.filter((post) => post.uploader.verified);
+
+  const posts = verifiedPost.map((post) => ({
+    _id: post._id,
+    content: post.content,
+    rating: post.rating,
+    nickName: post.uploader.nickName,
+    username: post.uploader.username,
+    profilePicture: post.uploader.profilePicture,
+    createdAt: post.createdAt,
+    thumbnail: post.url,
+  }));
+
+  return res.status(200).json({ data: posts });
+});
+
+// @desc get feed joke for private
+// @route GET /api/feed/user/jokes
+// @access private
+const getFeedJokes = asyncHandler(async (req, res) => {
+  const latestJoke = await Jokes.find({})
+    .sort({ createdAt: -1 })
+    .limit(4)
+    .populate("uploader")
+    .exec();
+
+  const verifiedJoke = latestJoke.filter((post) => post.uploader.verified);
+  
+  const jokes = verifiedJoke.map((joke) => ({
+    _id: joke._id,
+    content: joke.content,
+    rating: joke.rating,
+    nickName: joke.uploader.nickName,
+    username: joke.uploader.username,
+    profilePicture: joke.uploader.profilePicture,
+    createdAt: joke.createdAt,
+  }));
+
+  return res.status(200).json({ data: jokes });
+});
+
+module.exports = { getFeedVideo, getFeedPosts, getFeedJokes };

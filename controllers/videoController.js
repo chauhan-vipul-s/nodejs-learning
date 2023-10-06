@@ -28,6 +28,7 @@ const getSingleVideo = asyncHandler(async (req, res) => {
     createdAt: video.createdAt,
     thumbnail: video.thumbnail,
     description: video.description,
+    url: video.url,
   };
   res.status(200).json(videoData);
 });
