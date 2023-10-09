@@ -3,6 +3,9 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/usersModel");
+const nodemailer = require("nodemailer");
+const randomstring = require("randomstring");
+const { emailUser, emailPassword } = require("../config/smtpConfig");
 
 // @desc register user
 // @route POST /api/users/register
@@ -90,8 +93,65 @@ const currentUser = asyncHandler(async (req, res) => {
   res.json(req.user);
 });
 
+// @desc forget password token generation api
+// @route POST /api/users/forget-password
+// @access public
+const sendResetPasswordMail = async (name, email, token) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: { user: emailUser, pass: emailPassword },
+    });
+
+    const mailOptions = {
+      from: emailUser,
+      to: email,
+      subject: "For reset password",
+      html: `<p>Hii ${name} Please copy link and reset your password.<br/>
+      <a target="_blank" href=${
+        "http://localhost:3000/reset-password?token=" + token
+      }>Link</a>
+      </p>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Mail has been sent.", info.response);
+      }
+    });
+  } catch (error) {
+    res.send(400).send({ msg: error.message });
+  }
+};
+const forgetPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  try {
+    const userData = await User.findOne({ email });
+    if (userData) {
+      const randomstringvar = randomstring.generate();
+      await User.updateOne(
+        { email: email },
+        { $set: { resetToken: randomstringvar } }
+      );
+      sendResetPasswordMail(userData.username, email, randomstringvar);
+      res.status(200).send({ msg: `Email sent to ${email} successfully` });
+    } else {
+      res.status(200).send({ msg: "This email does not exist." });
+    }
+    res.status(200).send({ msg: "API called" });
+  } catch (error) {
+    res.status(400).send({ msg: error.message });
+  }
+});
+
 module.exports = {
   registerUser,
   loginUser,
   currentUser,
+  forgetPassword,
 };
