@@ -4,6 +4,7 @@ const {
   loginUser,
   currentUser,
   forgetPassword,
+  resetPassword,
 } = require("../controllers/usersController");
 const validateToken = require("../middleware/validateTokenHandler");
 
@@ -16,6 +17,8 @@ router.post("/login", loginUser);
 
 router.get("/current", validateToken, currentUser);
 
-router.get("/forget-password", forgetPassword);
+router.post("/forget-password", forgetPassword);
+
+router.post("/reset-password", resetPassword);
 
 module.exports = router;

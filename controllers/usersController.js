@@ -96,7 +96,7 @@ const currentUser = asyncHandler(async (req, res) => {
 // @desc forget password token generation api
 // @route POST /api/users/forget-password
 // @access public
-const sendResetPasswordMail = async (name, email, token) => {
+const sendResetPasswordMail = async (name, email, token, base) => {
   try {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -112,7 +112,7 @@ const sendResetPasswordMail = async (name, email, token) => {
       subject: "For reset password",
       html: `<p>Hii ${name} Please copy link and reset your password.<br/>
       <a target="_blank" href=${
-        "http://localhost:3000/reset-password?token=" + token
+        base + "/reset-password?token=" + token
       }>Link</a>
       </p>`,
     };
@@ -130,6 +130,7 @@ const sendResetPasswordMail = async (name, email, token) => {
 };
 const forgetPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
+  const { origin } = req.headers;
   try {
     const userData = await User.findOne({ email });
     if (userData) {
@@ -138,8 +139,8 @@ const forgetPassword = asyncHandler(async (req, res) => {
         { email: email },
         { $set: { resetToken: randomstringvar } }
       );
-      sendResetPasswordMail(userData.username, email, randomstringvar);
-      res.status(200).send({ msg: `Email sent to ${email} successfully` });
+      sendResetPasswordMail(userData.username, email, randomstringvar, origin);
+      res.status(200).send({ msg: `Email sent to ${email} successfully.` });
     } else {
       res.status(200).send({ msg: "This email does not exist." });
     }
@@ -149,9 +150,36 @@ const forgetPassword = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc reset password token generation api
+// @route POST /api/users/reset-password?token=xxxxxxxx
+// @access public
+const resetPassword = asyncHandler(async (req, res) => {
+  console.log("req", req.body.password);
+  const { token } = req.query;
+  try {
+    const tokenData = await User.findOne({ resetToken: token });
+    if (tokenData) {
+      const { password } = req.body;
+      const newPassword = await bcrypt.hash(password, 10);
+      const userData = await User.findByIdAndUpdate(
+        { _id: tokenData._id },
+        { $set: { password: newPassword, resetToken: "" } },
+        { new: true }
+      );
+      res.status(200).send({ msg: "User Password has been Reset." });
+    } else {
+      res.status(200).send({ msg: "This token expired." });
+    }
+  } catch (error) {
+    res.status(400).send({ msg: error.message });
+  }
+  res.json(req.query.token);
+});
+
 module.exports = {
   registerUser,
   loginUser,
   currentUser,
   forgetPassword,
+  resetPassword,
 };
