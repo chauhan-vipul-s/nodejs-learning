@@ -16,8 +16,9 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("userName, email and password Fields are required");
   }
+  const finalUserName = username.toLowerCase();
   const userAvailableEmail = await User.findOne({ email });
-  const userAvailableName = await User.findOne({ username });
+  const userAvailableName = await User.findOne({ username: finalUserName });
 
   if (userAvailableName) {
     res.status(400);
@@ -26,14 +27,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (userAvailableEmail) {
     res.status(400);
-    throw new Error("User Already Registered.");
+    throw new Error("Email Already Registered.");
   }
 
-  // create a hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await User.create({
-    username,
+    username: finalUserName,
     email,
     password: hashedPassword,
   });

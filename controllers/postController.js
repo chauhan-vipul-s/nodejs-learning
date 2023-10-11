@@ -6,8 +6,20 @@ const Posts = require("../models/postSchema");
 // @route GET /api/posts/
 // @access private
 const getPost = asyncHandler(async (req, res) => {
-  const posts =
-    (await Posts.find({ uploader: req.user.id }).sort({ createdAt: -1 })) || [];
+  const postsList =
+    (await Posts.find({ uploader: req.user.id })
+      .populate("uploader")
+      .sort({ createdAt: -1 })) || [];
+  const posts = postsList.map((post) => ({
+    _id: post._id,
+    content: post.content,
+    rating: post.rating,
+    nickName: post.uploader.nickName,
+    username: post.uploader.username,
+    profilePicture: post.uploader.profilePicture,
+    createdAt: post.createdAt,
+    thumbnail: post.url,
+  }));
   res.status(200).json(posts);
 });
 

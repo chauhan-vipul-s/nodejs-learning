@@ -4,6 +4,15 @@ const connectDb = require("./config/dbConnection");
 const dotenv = require("dotenv").config();
 var bodyParser = require("body-parser");
 const cors = require("cors");
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: 'dsylorgbb',
+  api_key: '189229763741214',
+  api_secret: 'M5E7T78zVerujnAcv4qnzxNoQEA',
+  secure: true,
+});
+
 
 // connect a database
 connectDb();

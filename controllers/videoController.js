@@ -1,15 +1,56 @@
 const asyncHandler = require("express-async-handler");
 
+const User = require("../models/usersModel");
 const Videos = require("../models/videoSchema");
 
 // @desc get video of user
 // @route GET /api/video/
 // @access private
 const getVideo = asyncHandler(async (req, res) => {
-  const videos =
-    (await Videos.find({ uploader: req.user.id }).sort({ createdAt: -1 })) ||
-    [];
+  const videosList =
+    (await Videos.find({ uploader: req.user.id })
+      .populate("uploader")
+      .sort({ createdAt: -1 })) || [];
+  const videos = videosList.map((video) => ({
+    _id: video._id,
+    title: video.title,
+    rating: video.rating,
+    nickName: video.uploader.nickName,
+    username: video.uploader.username,
+    profilePicture: video.uploader.profilePicture,
+    createdAt: video.createdAt,
+    thumbnail: video.thumbnail,
+  }));
   res.status(200).json(videos);
+});
+
+// @desc get video of user
+// @route GET /api/video/user/:name
+// @access private
+const getVideosByUserName = asyncHandler(async (req, res) => {
+  const { name } = req.params;
+  const user = await User.findOne({ username: name });
+
+  if (user) {
+    const videosList =
+      (await Videos.find({ uploader: user._id })
+        .populate("uploader")
+        .sort({ createdAt: -1 })) || [];
+
+    const videos = videosList.map((video) => ({
+      _id: video._id,
+      title: video.title,
+      rating: video.rating,
+      nickName: video.uploader.nickName,
+      username: video.uploader.username,
+      profilePicture: video.uploader.profilePicture,
+      createdAt: video.createdAt,
+      thumbnail: video.thumbnail,
+    }));
+    res.status(200).json(videos);
+  } else {
+    res.status(400).send({ msg: "No such user found with this username." });
+  }
 });
 
 // @desc get single video by id
@@ -56,4 +97,5 @@ module.exports = {
   getVideo,
   postVideo,
   getSingleVideo,
+  getVideosByUserName,
 };
