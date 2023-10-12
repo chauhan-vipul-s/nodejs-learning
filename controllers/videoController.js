@@ -3,6 +3,13 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/usersModel");
 const Videos = require("../models/videoSchema");
 
+const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
+
+// Set up a storage engine for Multer
+const storage = multer.memoryStorage(); // Store the file in memory
+const upload = multer({ storage: storage });
+
 // @desc get video of user
 // @route GET /api/video/
 // @access private
@@ -75,22 +82,56 @@ const getSingleVideo = asyncHandler(async (req, res) => {
 });
 
 // @desc post video for that user
-// @route POST /api/video/
+// @route POST /api/videos/
 // @access private
 const postVideo = asyncHandler(async (req, res) => {
-  const { title, description, url, tags } = req.body;
-  if (!title || !url) {
-    res.status(404);
-    throw new Error("Title and url required for post a video");
+  console.log("first");
+  const { title, description, tags } = req.body;
+
+  const video = req.files.find((data) => data.mimetype.split("/")[1] === "mp4");
+  const image = req.files.find(
+    (data) =>
+      data.mimetype.split("/")[1] === "jpeg" ||
+      data.mimetype.split("/")[1] === "jpg"
+  );
+
+  console.log(video, image);
+
+  if (!title || !video || !image) {
+    return res.status(400).json({ error: "No file uploaded" });
   }
-  const video = await Videos.create({
-    title,
-    description,
-    url,
-    tags,
-    uploader: req.user.id,
-  });
-  res.status(200).json(video);
+
+  try {
+    const videoData = video.buffer.toString("base64");
+    const videoDataUrl = `data:${video.mimetype};base64,${videoData}`;
+    console.log("videoDataUrl", videoDataUrl);
+    const videoUrl = await cloudinary.uploader.upload(videoDataUrl, {
+      resource_type: "video",
+      folder: "video",
+    });
+
+    const imageData = image.buffer.toString("base64");
+    const imageDataUrl = `data:${image.mimetype};base64,${imageData}`;
+
+    const imageUrl = await cloudinary.uploader.upload(imageDataUrl, {
+      resource_type: "image",
+      folder: "thumbnail",
+    });
+
+    const uploadedVideo = await Videos.create({
+      title,
+      description,
+      url: videoUrl.secure_url,
+      thumbnail: imageUrl.secure_url,
+      tags,
+      uploader: req.user.id,
+    });
+
+    res.json(uploadedVideo);
+  } catch (error) {
+    console.error("Error uploading video to Cloudinary:", error);
+    res.status(500).json({ error: "Upload failed" });
+  }
 });
 
 module.exports = {

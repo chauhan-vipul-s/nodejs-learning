@@ -16,6 +16,7 @@ const getJokes = asyncHandler(async (req, res) => {
 // @access private
 const postJokes = asyncHandler(async (req, res) => {
   const { content, tags } = req.body;
+  console.log(content, tags);
   if (!content) {
     res.status(404);
     throw new Error("Content required for post a joke");

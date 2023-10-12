@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
+const cloudinary = require("cloudinary").v2;
+
 const Posts = require("../models/postSchema");
 
 // @desc get posts of user
@@ -27,20 +29,33 @@ const getPost = asyncHandler(async (req, res) => {
 // @route POST /api/posts/
 // @access private
 const postPost = asyncHandler(async (req, res) => {
-  const { content, url, tags, isShow, showOnDate } = req.body;
-  if (!content || !url) {
+  const { content, tags, isShow, showOnDate } = req.body;
+  if (!content || !req.file) {
     res.status(404);
-    throw new Error("Content and url required for post a video");
+    throw new Error("Content and file required for post.");
   }
-  const post = await Posts.create({
-    content,
-    url,
-    tags,
-    isShow,
-    showOnDate,
-    uploader: req.user.id,
-  });
-  res.status(200).json(post);
+  try {
+    const imageData = req.file.buffer.toString("base64");
+    const imageDataUrl = `data:${req.file.mimetype};base64,${imageData}`;
+
+    const imageUrl = await cloudinary.uploader.upload(imageDataUrl, {
+      resource_type: "image",
+      folder: "thumbnail",
+    });
+
+    const post = await Posts.create({
+      content,
+      url: imageUrl.secure_url,
+      tags,
+      isShow,
+      showOnDate,
+      uploader: req.user.id,
+    });
+    res.status(200).json(post);
+  } catch (error) {
+    console.error("Error uploading post to Cloudinary:", error);
+    res.status(500).json({ error: "Upload failed" });
+  }
 });
 
 module.exports = {

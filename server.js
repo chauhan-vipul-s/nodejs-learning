@@ -4,15 +4,14 @@ const connectDb = require("./config/dbConnection");
 const dotenv = require("dotenv").config();
 var bodyParser = require("body-parser");
 const cors = require("cors");
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
-  cloud_name: 'dsylorgbb',
-  api_key: '189229763741214',
-  api_secret: 'M5E7T78zVerujnAcv4qnzxNoQEA',
+  cloud_name: "dsylorgbb",
+  api_key: "189229763741214",
+  api_secret: "M5E7T78zVerujnAcv4qnzxNoQEA",
   secure: true,
 });
-
 
 // connect a database
 connectDb();
@@ -43,6 +42,8 @@ app.use(cors());
 
 // need to add a middleware for the read a body
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json({ limit: "1000mb" }));
 
 // after create this create a rountes folder
 // which used to handle a multiple apis
