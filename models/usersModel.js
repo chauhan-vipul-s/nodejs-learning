@@ -50,6 +50,10 @@ const userSchema = mongoose.Schema(
         ref: "Achievement",
       },
     ],
+    yourReview: {
+      type: Array,
+      default: [],
+    },
     why: {
       type: String,
       default: "",

@@ -10,13 +10,12 @@ const Jokes = require("../models/jokesSchema");
 const getPublicFeedVideo = asyncHandler(async (req, res) => {
   const latestVideos = await Videos.find({})
     .sort({ createdAt: -1 })
-    .limit(4)
     .populate("uploader")
     .exec();
 
-  const verifiedVideos = latestVideos.filter(
-    (video) => video.uploader.verified
-  );
+  const verifiedVideos = latestVideos
+    .filter((video) => video.uploader.verified)
+    .slice(0, 4);
 
   const videos = verifiedVideos.map((video) => ({
     _id: video._id,
@@ -38,11 +37,12 @@ const getPublicFeedVideo = asyncHandler(async (req, res) => {
 const getPublicFeedPosts = asyncHandler(async (req, res) => {
   const latestPost = await Post.find({})
     .sort({ createdAt: -1 })
-    .limit(4)
     .populate("uploader")
     .exec();
 
-  const verifiedPost = latestPost.filter((post) => post.uploader.verified);
+  const verifiedPost = latestPost
+    .filter((post) => post.uploader.verified)
+    .slice(0, 4);
 
   const posts = verifiedPost.map((post) => ({
     _id: post._id,
@@ -69,7 +69,7 @@ const getPublicFeedJokes = asyncHandler(async (req, res) => {
     .exec();
 
   const verifiedJoke = latestJoke.filter((post) => post.uploader.verified);
-  
+
   const jokes = verifiedJoke.map((joke) => ({
     _id: joke._id,
     content: joke.content,

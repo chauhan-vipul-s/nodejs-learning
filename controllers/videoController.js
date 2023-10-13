@@ -66,6 +66,8 @@ const getVideosByUserName = asyncHandler(async (req, res) => {
 const getSingleVideo = asyncHandler(async (req, res) => {
   const video =
     (await Videos.findOne({ _id: req.params.id }).populate("uploader")) || {};
+  const yourReview =
+    video.allReview.find((data) => data.id === req.user.id)?.rea || 0;
   const videoData = {
     _id: video._id,
     title: video.title,
@@ -77,6 +79,7 @@ const getSingleVideo = asyncHandler(async (req, res) => {
     thumbnail: video.thumbnail,
     description: video.description,
     url: video.url,
+    yourReview,
   };
   res.status(200).json(videoData);
 });
@@ -85,52 +88,89 @@ const getSingleVideo = asyncHandler(async (req, res) => {
 // @route POST /api/videos/
 // @access private
 const postVideo = asyncHandler(async (req, res) => {
-  console.log("first");
-  const { title, description, tags } = req.body;
+  const { title, url, thumbnail, description, tags } = req.body;
 
-  const video = req.files.find((data) => data.mimetype.split("/")[1] === "mp4");
-  const image = req.files.find(
-    (data) =>
-      data.mimetype.split("/")[1] === "jpeg" ||
-      data.mimetype.split("/")[1] === "jpg"
-  );
-
-  console.log(video, image);
-
-  if (!title || !video || !image) {
+  if (!title || !url || !thumbnail) {
     return res.status(400).json({ error: "No file uploaded" });
   }
 
   try {
-    const videoData = video.buffer.toString("base64");
-    const videoDataUrl = `data:${video.mimetype};base64,${videoData}`;
-    console.log("videoDataUrl", videoDataUrl);
-    const videoUrl = await cloudinary.uploader.upload(videoDataUrl, {
-      resource_type: "video",
-      folder: "video",
-    });
-
-    const imageData = image.buffer.toString("base64");
-    const imageDataUrl = `data:${image.mimetype};base64,${imageData}`;
-
-    const imageUrl = await cloudinary.uploader.upload(imageDataUrl, {
-      resource_type: "image",
-      folder: "thumbnail",
-    });
-
     const uploadedVideo = await Videos.create({
       title,
       description,
-      url: videoUrl.secure_url,
-      thumbnail: imageUrl.secure_url,
+      url,
+      thumbnail,
       tags,
       uploader: req.user.id,
     });
 
     res.json(uploadedVideo);
   } catch (error) {
-    console.error("Error uploading video to Cloudinary:", error);
+    console.error("Error uploading video.", error);
     res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+// @desc handle rating change
+// @route POST /api/videos/rate/:id(video id)
+// @access private
+const updateRatingForVideo = asyncHandler(async (req, res) => {
+  const { rate } = req.body;
+  const videoId = req.params.id;
+  if (!(rate > -1 && rate < 6)) {
+    res.status(400).send({ msg: "Rating not allowed." });
+  }
+  try {
+    const updatedAllReview = {
+      id: videoId,
+      rate: rate,
+    };
+    const previousData = await User.findOne({ _id: req.user.id });
+    const newUpdatedReviewUserList = [
+      ...previousData.yourReview.filter((rateObj) => rateObj.id !== videoId),
+      updatedAllReview,
+    ];
+
+    const updatedAllVideoReview = {
+      id: req.user.id,
+      rate: rate,
+    };
+    const previousVideoData = await Videos.findOne({ _id: videoId });
+    const newUpdatedReviewVideoList = [
+      ...previousVideoData.allReview.filter(
+        (rateObj) => rateObj.id !== req.user.id
+      ),
+      updatedAllVideoReview,
+    ];
+
+    let sum = 0,
+      avg = 0;
+    newUpdatedReviewVideoList.forEach((objList) => {
+      sum = sum + objList.rate;
+    });
+
+    avg = sum / newUpdatedReviewVideoList.length;
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { yourReview: newUpdatedReviewUserList },
+      {
+        new: true,
+      }
+    );
+
+    const video = await Videos.findByIdAndUpdate(
+      videoId,
+      { rating: avg, allReview: newUpdatedReviewVideoList },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).send(video);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ msg: "something went wrong." });
   }
 });
 
@@ -139,4 +179,5 @@ module.exports = {
   postVideo,
   getSingleVideo,
   getVideosByUserName,
+  updateRatingForVideo,
 };

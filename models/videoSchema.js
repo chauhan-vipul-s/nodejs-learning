@@ -18,6 +18,10 @@ const videoSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    allReview: {
+      type: Array,
+      default: [],
+    },
     tags: {
       type: Array,
       default: [],

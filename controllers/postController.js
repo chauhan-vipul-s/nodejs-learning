@@ -29,23 +29,15 @@ const getPost = asyncHandler(async (req, res) => {
 // @route POST /api/posts/
 // @access private
 const postPost = asyncHandler(async (req, res) => {
-  const { content, tags, isShow, showOnDate } = req.body;
-  if (!content || !req.file) {
+  const { content, url, tags, isShow, showOnDate } = req.body;
+  if (!content || !url) {
     res.status(404);
     throw new Error("Content and file required for post.");
   }
   try {
-    const imageData = req.file.buffer.toString("base64");
-    const imageDataUrl = `data:${req.file.mimetype};base64,${imageData}`;
-
-    const imageUrl = await cloudinary.uploader.upload(imageDataUrl, {
-      resource_type: "image",
-      folder: "thumbnail",
-    });
-
     const post = await Posts.create({
       content,
-      url: imageUrl.secure_url,
+      url,
       tags,
       isShow,
       showOnDate,
@@ -53,7 +45,7 @@ const postPost = asyncHandler(async (req, res) => {
     });
     res.status(200).json(post);
   } catch (error) {
-    console.error("Error uploading post to Cloudinary:", error);
+    console.error("Error uploading post.", error);
     res.status(500).json({ error: "Upload failed" });
   }
 });
