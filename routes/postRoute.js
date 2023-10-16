@@ -1,6 +1,11 @@
 const express = require("express");
 const validateToken = require("../middleware/validateTokenHandler");
-const { getPost, postPost } = require("../controllers/postController");
+const {
+  getPost,
+  postPost,
+  getSinglePost,
+  getPostsByUserName,
+} = require("../controllers/postController");
 
 const router = express.Router();
 
@@ -8,11 +13,9 @@ router.use(validateToken);
 
 router.route("/").get(getPost).post(postPost);
 
-router
-  .route("/:name")
-  .get((req, res) =>
-    res.send("get a post of pertifular profile viewing user" + req.params.name)
-  );
+router.route("/:id").get(getSinglePost);
+
+router.route("/user/:name").get(getPostsByUserName);
 
 router
   .route("/update/:id")

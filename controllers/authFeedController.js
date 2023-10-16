@@ -21,7 +21,7 @@ const getFeedVideo = asyncHandler(async (req, res) => {
   const videos = verifiedVideos.map((video) => ({
     _id: video._id,
     title: video.title,
-    rating: video.rating,
+    rating: Math.floor(video.rating),
     nickName: video.uploader.nickName,
     username: video.uploader.username,
     profilePicture: video.uploader.profilePicture,

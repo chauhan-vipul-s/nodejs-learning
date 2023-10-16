@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 
 const cloudinary = require("cloudinary").v2;
 
+const User = require("../models/usersModel");
 const Posts = require("../models/postSchema");
 
 // @desc get posts of user
@@ -23,6 +24,55 @@ const getPost = asyncHandler(async (req, res) => {
     thumbnail: post.url,
   }));
   res.status(200).json(posts);
+});
+
+// @desc get posts of user by username
+// @route GET /api/posts/:name
+// @access private
+const getPostsByUserName = asyncHandler(async (req, res) => {
+  const { name } = req.params;
+  const user = await User.findOne({ username: name });
+
+  if (user) {
+    const postsList =
+      (await Posts.find({ uploader: user._id })
+        .populate("uploader")
+        .sort({ createdAt: -1 })) || [];
+
+    const posts = postsList.map((post) => ({
+      _id: post._id,
+      content: post.content,
+      rating: post.rating,
+      nickName: post.uploader.nickName,
+      username: post.uploader.username,
+      profilePicture: post.uploader.profilePicture,
+      createdAt: post.createdAt,
+      thumbnail: post.url,
+    }));
+    res.status(200).json(posts);
+  } else {
+    res.status(400).send({ msg: "No such user found with this username." });
+  }
+});
+
+// @desc get post by id
+// @route GET /api/posts/:id
+// @access private
+const getSinglePost = asyncHandler(async (req, res) => {
+  const postFiltered =
+    (await Posts.findOne({ _id: req.params.id }).populate("uploader")) || {};
+  console.log(postFiltered);
+  const post = {
+    _id: postFiltered._id,
+    content: postFiltered.content,
+    rating: postFiltered.rating,
+    nickName: postFiltered.uploader.nickName,
+    username: postFiltered.uploader.username,
+    profilePicture: postFiltered.uploader.profilePicture,
+    createdAt: postFiltered.createdAt,
+    thumbnail: postFiltered.url,
+  };
+  res.status(200).json(post);
 });
 
 // @desc post posts for that user
@@ -53,4 +103,6 @@ const postPost = asyncHandler(async (req, res) => {
 module.exports = {
   getPost,
   postPost,
+  getSinglePost,
+  getPostsByUserName,
 };

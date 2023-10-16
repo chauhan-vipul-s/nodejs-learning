@@ -6,6 +6,8 @@ const {
   getSingleVideo,
   getVideosByUserName,
   updateRatingForVideo,
+  updataVideo,
+  deleteVideo,
 } = require("../controllers/videoController");
 // const cloudinary = require("cloudinary").v2;
 // const multer = require("multer");
@@ -20,7 +22,7 @@ router.use(validateToken);
 
 router.route("/").get(getVideo).post(postVideo);
 
-router.route("/:id").get(getSingleVideo);
+router.route("/:id").get(getSingleVideo).put(updataVideo).delete(deleteVideo);
 
 router.route("/user/:name").get(getVideosByUserName);
 

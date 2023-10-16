@@ -26,7 +26,7 @@ const getTrendingVideo = asyncHandler(async (req, res) => {
   const videoData = {
     _id: highestRatedVideo._id,
     title: highestRatedVideo.title,
-    rating: highestRatedVideo.rating,
+    rating: Math.floor(highestRatedVideo.rating),
     nickName: highestRatedVideo.uploader.nickName,
     username: highestRatedVideo.uploader.username,
     profilePicture: highestRatedVideo.uploader.profilePicture,
