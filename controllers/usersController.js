@@ -90,7 +90,10 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route GET /api/users/current
 // @access private
 const currentUser = asyncHandler(async (req, res) => {
-  res.json(req.user);
+  const user = await User.findOne({ _id: req.user.id }).populate(
+    "achievements"
+  );
+  res.json(user);
 });
 
 // @desc forget password token generation api
