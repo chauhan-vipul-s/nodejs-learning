@@ -157,7 +157,6 @@ const forgetPassword = asyncHandler(async (req, res) => {
 // @route POST /api/users/reset-password?token=xxxxxxxx
 // @access public
 const resetPassword = asyncHandler(async (req, res) => {
-  console.log("req", req.body.password);
   const { token } = req.query;
   try {
     const tokenData = await User.findOne({ resetToken: token });

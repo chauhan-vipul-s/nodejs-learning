@@ -6,10 +6,16 @@ const User = require("../models/usersModel");
 // @route PATCH /api/comedian
 // @access private
 const udpateComedian = asyncHandler(async (req, res) => {
-  const { profilePicture, nickName } = req.body;
+  const { profilePicture, nickName, introVideo, introThumbnail } = req.body;
+  const previoursUser = await User.findOne({ email: req.user.email });
   const user = await User.findByIdAndUpdate(
     req.user.id,
-    { profilePicture, nickName },
+    {
+      profilePicture: profilePicture || previoursUser.profilePicture,
+      nickName: nickName || previoursUser.nickName,
+      introVideo: introVideo || previoursUser.introVideo,
+      introThumbnail: introThumbnail || previoursUser.introThumbnail,
+    },
     {
       new: true,
     }
@@ -21,7 +27,9 @@ const udpateComedian = asyncHandler(async (req, res) => {
 // @route GET /api/comedian
 // @access private
 const getComedianInfo = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ email: req.user.email }).populate('achievements');
+  const user = await User.findOne({ email: req.user.email }).populate(
+    "achievements"
+  );
   const userData = {
     email: user.email,
     nickName: user.nickName,
@@ -35,6 +43,8 @@ const getComedianInfo = asyncHandler(async (req, res) => {
     achievements: user.achievements,
     why: user.why,
     _id: user._id,
+    introThumbnail: user.introThumbnail,
+    introVideo: user.introVideo,
   };
   res.status(200).json(userData);
 });
@@ -43,7 +53,9 @@ const getComedianInfo = asyncHandler(async (req, res) => {
 // @route GET /api/comedian/:username
 // @access private
 const getComedianInfoByUserName = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ username: req.params.username }).populate('achievements');
+  const user = await User.findOne({ username: req.params.username }).populate(
+    "achievements"
+  );
   const userData = {
     email: user.email,
     nickName: user.nickName,

@@ -61,7 +61,7 @@ const getPostsByUserName = asyncHandler(async (req, res) => {
 const getSinglePost = asyncHandler(async (req, res) => {
   const postFiltered =
     (await Posts.findOne({ _id: req.params.id }).populate("uploader")) || {};
-  console.log(postFiltered);
+
   const post = {
     _id: postFiltered._id,
     content: postFiltered.content,

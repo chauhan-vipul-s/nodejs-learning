@@ -64,11 +64,12 @@ const getPublicFeedPosts = asyncHandler(async (req, res) => {
 const getPublicFeedJokes = asyncHandler(async (req, res) => {
   const latestJoke = await Jokes.find({})
     .sort({ createdAt: -1 })
-    .limit(4)
     .populate("uploader")
     .exec();
 
-  const verifiedJoke = latestJoke.filter((post) => post.uploader.verified);
+  const verifiedJoke = latestJoke
+    .filter((post) => post.uploader.verified)
+    .slice(0, 4);
 
   const jokes = verifiedJoke.map((joke) => ({
     _id: joke._id,

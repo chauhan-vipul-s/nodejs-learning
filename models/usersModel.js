@@ -58,6 +58,14 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "",
     },
+    introVideo: {
+      type: String,
+      default: "",
+    },
+    introThumbnail: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
