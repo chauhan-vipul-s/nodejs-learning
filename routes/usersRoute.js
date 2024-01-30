@@ -1,4 +1,5 @@
 const express = require("express");
+const asyncHandler = require("express-async-handler");
 const {
   registerUser,
   loginUser,
@@ -11,7 +12,16 @@ const validateToken = require("../middleware/validateTokenHandler");
 // take router from express
 const router = express.Router();
 
-router.post("/register", registerUser);
+router.post(
+  "/test500",
+  asyncHandler(async (req, res) => {
+     res.status(500);
+    // return res.status(500);
+     throw new error("Error 500 test.");
+  })
+);
+
+router.post("/register", () => {});
 
 router.post("/login", loginUser);
 

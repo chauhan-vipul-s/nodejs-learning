@@ -40,7 +40,7 @@ const port = process.env.PORT || "5000";
 // Use the cors middleware to enable Cross-Origin Resource Sharing
 app.use(cors());
 
-// need to add a middleware for the read a body
+// need to add a middleware for the read a body for form data body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json({ limit: "1000mb" }));
@@ -78,6 +78,9 @@ app.use("/api/feed/user/", require("./routes/authFeedRoute"));
 
 // search route
 app.use("/api/search/", require("./routes/searchRoute"));
+
+// ai route
+app.use("/api/gemini-ai/", require("./routes/geminiAIRoute"));
 
 // use the error middleware
 app.use(errorHandler);
